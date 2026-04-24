@@ -38,7 +38,7 @@
 
         #connection-panel {
             background: #333; padding: 15px; border-radius: 8px;
-            margin-bottom: 20px; text-align: center;
+            margin-bottom: 20px; text-align: center; width: 100%; max-width: 400px;
         }
 
         input { padding: 10px; border-radius: 4px; border: none; margin: 10px; width: 150px; text-align: center; font-size: 1rem; }
@@ -89,14 +89,14 @@
     <h1>Chrispen's Checkers</h1>
 
     <div id="connection-panel">
-        <p>Your ID: <strong id="my-id">...</strong></p>
+        <p>Your ID: <strong id="my-id">Generating...</strong></p>
         <input type="text" id="peer-id-input" placeholder="Friend's ID">
         <button onclick="connectToFriend()">Join Game</button>
-        <p id="conn-status" style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">Waiting...</p>
+        <p id="conn-status" style="color: #fbbf24; font-size: 0.9rem; margin-top: 10px;">Offline</p>
     </div>
 
     <div id="board"></div>
-    <p id="status">Turn: Black</p>
+    <p id="status">Waiting for connection...</p>
 
     <script>
         const boardElement = document.getElementById('board');
@@ -130,7 +130,7 @@
 
         function saveName() {
             const input = document.getElementById('user-name-input').value;
-            if (!input) return alert("Please enter a name!");
+            if (!input.trim()) return alert("Please enter a name!");
             myName = input;
             document.getElementById('setup-screen').style.display = 'none';
             initPeer();
@@ -139,16 +139,21 @@
         function initPeer() {
             const shortId = Math.floor(1000 + Math.random() * 9000).toString();
             peer = new Peer(shortId); 
-            peer.on('open', (id) => { myIdDisplay.innerText = id; });
-            peer.on('error', (err) => { 
-                console.error(err);
-                if(err.type === 'unavailable-id') window.location.reload(); 
+            
+            peer.on('open', (id) => { 
+                myIdDisplay.innerText = id; 
+                connStatus.innerText = "Online. Send ID to friend.";
             });
 
             peer.on('connection', (connection) => {
                 conn = connection;
                 myRole = 'black';
-                setupDataHandler();
+                handleData();
+            });
+
+            peer.on('error', (err) => {
+                if(err.type === 'unavailable-id') initPeer();
+                else connStatus.innerText = "Connection Error. Refresh.";
             });
         }
 
@@ -157,20 +162,20 @@
             if(!peerId) return;
             conn = peer.connect(peerId);
             myRole = 'red';
-            setupDataHandler();
-            
-            // Wait for connection to open before sending name
-            conn.on('open', () => {
-                conn.send({ type: 'handshake', name: myName });
-            });
+            handleData();
         }
 
-        function setupDataHandler() {
+        function handleData() {
+            conn.on('open', () => {
+                connStatus.innerText = "Syncing...";
+                conn.send({ type: 'handshake', name: myName });
+            });
+
             conn.on('data', (data) => {
+                console.log("Received:", data);
                 if (data.type === 'handshake') {
                     opponentName = data.name;
-                    connStatus.innerText = `Connected to ${opponentName}!`;
-                    // If we haven't sent our name yet (Host side), send it now
+                    connStatus.innerText = `Playing with ${opponentName}`;
                     if (myRole === 'black') {
                         conn.send({ type: 'handshake', name: myName });
                     }
@@ -296,16 +301,11 @@
 
         function resetGame(sendNotify) {
             boardState = JSON.parse(JSON.stringify(initialBoard));
-            turn = 'black';
-            mustJump = false;
-            selected = null;
-            winModal.style.display = 'none';
-            overlay.style.display = 'none';
+            turn = 'black'; mustJump = false; selected = null;
+            winModal.style.display = 'none'; overlay.style.display = 'none';
             if (sendNotify && conn) conn.send({ type: 'reset' });
             createBoard();
         }
-
-        createBoard();
     </script>
 </body>
 </html>
