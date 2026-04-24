@@ -3,15 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roka Checkers</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Peer-to-Peer Checkers</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        :root {
+            --bg: #1a1a1a;
+            --board-dark: #769656;
+            --board-light: #eeeed2;
+            --red-piece: #cc3333;
+            --black-piece: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #connection-panel {
+            background: #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        input {
+            padding: 8px;
+            border-radius: 4px;
+            border: none;
+            margin-right: 5px;
+        }
+
+        button {
+            padding: 8px 15px;
+            background: #769656;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover { background: #658348; }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            border: 5px solid #444;
+            user-select: none;
+        }
+
+        .square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .white-sq { background-color: var(--board-light); }
+        .black-sq { background-color: var(--board-dark); }
+
+        .piece {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: inset 0 -3px 5px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .red { background-color: var(--red-piece); border: 2px solid #600; }
+        .black { background-color: var(--black-piece); border: 2px solid #000; }
+
+        .selected { outline: 4px solid yellow; z-index: 10; }
+        
+        #status {
+            margin-top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+
     <h1>Checkers Live</h1>
-    <div id="game-container">
-        <div id="board"></div>
+
+    <div id="connection-panel">
+        <p>Your ID: <strong id="my-id">Connecting...</strong></p>
+        <input type="text" id="peer-id-input" placeholder="Enter Friend's ID">
+        <button onclick="connectToFriend()">Connect & Play</button>
+        <p id="conn-status" style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">Waiting for a connection...</p>
     </div>
+
+    <div id="board"></div>
     <p id="status">Turn: Black</p>
-    <script src="script.js"></script>
+
+    <script>
+        const boardElement = document.getElementById('board');
+        const statusText = document.getElementById('status');
+        const myIdDisplay = document.getElementById('my-id');
+        const connStatus = document.getElementById('conn-status');
+
+        let peer = new Peer();
+        let conn = null;
+        let myRole = null; // 'black' or 'red'
+        let turn = 'black';
+        let selected = null;
+        let mustJump = false;
+
+        let boardState = [
+            [' ', 'r', ' ', 'r', ' ', 'r', ' ', 'r'],
+            ['r', ' ', 'r', ' ', 'r', ' ', 'r', ' '],
+            [' ', 'r', ' ', 'r', ' ', 'r', ' ', 'r'],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            ['b', ' ', 'b', ' ', 'b', ' ', 'b', ' '],
+            [' ', 'b', ' ', 'b', ' ', 'b', ' ', 'b'],
+            ['b', ' ', 'b', ' ', 'b', ' ', 'b', ' ']
+        ];
+
+        // --- Connection Logic ---
+        peer.on('open', (id) => { myIdDisplay.innerText = id; });
+
+        peer.on('connection', (connection) => {
+            conn = connection;
+            myRole = 'black';
+            setupDataHandler();
+            connStatus.innerText = "Status: Connected! You are Black (Player 1).";
+            createBoard();
+        });
+
+        function connectToFriend() {
+            const peerId = document.getElementById('peer-id-input').value;
+            if (!peerId) return;
+            conn = peer.connect(peerId);
+            myRole = 'red';
+            setupDataHandler();
+            connStatus.innerText = "Status: Connected! You are Red (Player 2).";
+            createBoard();
+        }
+
+        function setupDataHandler() {
+            conn.on('data', (data) => {
+                boardState = data.board;
+                turn = data.nextTurn;
+                mustJump = data.mustJump || false;
+                createBoard();
+                updateStatusText();
+            });
+        }
+
+        // --- Game Logic ---
+        function createBoard() {
+            boardElement.innerHTML = '';
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(r + c) % 2 === 0 ? 'white-sq' : 'black-sq'}`;
+                    
+                    const char = boardState[r][c];
+                    if (char !== ' ') {
+                        const piece = document.createElement('div');
+                        piece.className = `piece ${char.toLowerCase() === 'b' ? 'black' : 'red'}`;
+                        if (char === 'B' || char === 'R') piece.innerText = '👑';
+                        square.appendChild(piece);
+                    }
+
+                    if (selected && selected.r === r && selected.c === c) {
+                        square.classList.add('selected');
+                    }
+
+                    square.onclick = () => handleSquareClick(r, c);
+                    boardElement.appendChild(square);
+                }
+            }
+            updateStatusText();
+        }
+
+        function handleSquareClick(r, c) {
+            if (!conn) { alert("Please connect to a friend first!"); return; }
+            if (turn !== myRole) return;
+
+            const piece = boardState[r][c];
+            if (piece !== ' ' && piece.toLowerCase() === turn[0]) {
+                if (mustJump && (selected?.r !== r || selected?.c !== c)) return;
+                selected = { r, c };
+                createBoard();
+                return;
+            }
+
+            if (selected) {
+                const move = isValidMove(selected.r, selected.c, r, c);
+                if (move.valid) {
+                    executeMove(selected.r, selected.c, r, c, move.isJump);
+                    conn.send({ board: boardState, nextTurn: turn, mustJump: mustJump });
+                } else {
+                    selected = null;
+                    createBoard();
+                }
+            }
+        }
+
+        function isValidMove(r1, c1, r2, c2) {
+            const piece = boardState[r1][c1];
+            if (boardState[r2][c2] !== ' ') return { valid: false };
+
+            const dr = r2 - r1;
+            const dc = c2 - c1;
+            const absDr = Math.abs(dr);
+            const absDc = Math.abs(dc);
+
+            if (absDr !== absDc) return { valid: false };
+
+            // Movement direction
+            if (piece === 'b' && dr > 0) return { valid: false };
+            if (piece === 'r' && dr < 0) return { valid: false };
+
+            if (absDr === 1 && !mustJump) return { valid: true, isJump: false };
+
+            if (absDr === 2) {
+                const midR = (r1 + r2) / 2;
+                const midC = (c1 + c2) / 2;
+                const midPiece = boardState[midR][midC];
+                if (midPiece !== ' ' && midPiece.toLowerCase() !== turn[0]) {
+                    return { valid: true, isJump: true };
+                }
+            }
+            return { valid: false };
+        }
+
+        function executeMove(r1, c1, r2, c2, isJump) {
+            let piece = boardState[r1][c1];
+            boardState[r2][c2] = piece;
+            boardState[r1][c1] = ' ';
+
+            if (isJump) boardState[(r1 + r2) / 2][(c1 + c2) / 2] = ' ';
+
+            // Kinging
+            if (r2 === 0 && piece === 'b') boardState[r2][c2] = 'B';
+            if (r2 === 7 && piece === 'r') boardState[r2][c2] = 'R';
+
+            if (isJump && canJumpAgain(r2, c2)) {
+                selected = { r: r2, c: c2 };
+                mustJump = true;
+            } else {
+                selected = null;
+                mustJump = false;
+                turn = turn === 'black' ? 'red' : 'black';
+            }
+            createBoard();
+        }
+
+        function canJumpAgain(r, c) {
+            const dirs = [[2, 2], [2, -2], [-2, 2], [-2, -2]];
+            return dirs.some(([dr, dc]) => {
+                const nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+                    return isValidMove(r, c, nr, nc).isJump;
+                }
+                return false;
+            });
+        }
+
+        function updateStatusText() {
+            const playerLabel = myRole ? `(You: ${myRole})` : "";
+            statusText.innerText = `Turn: ${turn.toUpperCase()} ${playerLabel}`;
+            if (turn === myRole) statusText.style.color = "#769656";
+            else statusText.style.color = "white";
+        }
+
+        createBoard();
+    </script>
 </body>
 </html>
