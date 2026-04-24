@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peer-to-Peer Checkers</title>
+    <title>Chrispen's Checkers</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
@@ -53,7 +53,6 @@
         .black { background-color: var(--black-piece); border: 2px solid #000; }
         .selected { outline: 4px solid yellow; z-index: 10; }
         
-        /* Modal Style */
         #win-modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: white; color: black; padding: 30px; border-radius: 10px; text-align: center;
@@ -70,13 +69,13 @@
         <button onclick="resetGame(true)">Play Again</button>
     </div>
 
-    <h1>Checkers Live</h1>
+    <h1>Chrispen's Checkers</h1>
 
     <div id="connection-panel">
-        <p>Your ID: <strong id="my-id">...</strong></p>
+        <p>Your Game ID: <strong id="my-id">...</strong></p>
         <input type="text" id="peer-id-input" placeholder="Friend ID">
         <button onclick="connectToFriend()">Join Game</button>
-        <p id="conn-status" style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">Waiting...</p>
+        <p id="conn-status" style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">Waiting for connection...</p>
     </div>
 
     <div id="board"></div>
@@ -91,7 +90,6 @@
         const overlay = document.getElementById('overlay');
         const winnerText = document.getElementById('winner-text');
 
-        // Generate a 4-digit ID
         const shortId = Math.floor(1000 + Math.random() * 9000).toString();
         let peer = new Peer(shortId); 
         let conn = null;
@@ -113,6 +111,7 @@
         let boardState = JSON.parse(JSON.stringify(initialBoard));
 
         peer.on('open', (id) => { myIdDisplay.innerText = id; });
+        peer.on('error', () => { window.location.reload(); }); // Simple refresh on ID conflict
 
         peer.on('connection', (connection) => {
             conn = connection;
@@ -124,6 +123,7 @@
 
         function connectToFriend() {
             const peerId = document.getElementById('peer-id-input').value;
+            if(!peerId) return;
             conn = peer.connect(peerId);
             myRole = 'red';
             setupDataHandler();
@@ -190,7 +190,11 @@
             const dr = r2 - r1, dc = c2 - c1;
             const absDr = Math.abs(dr), absDc = Math.abs(dc);
             if (absDr !== absDc) return { valid: false };
-            if ((piece === 'b' && dr > 0) || (piece === 'r' && dr < 0)) return { valid: false };
+            
+            // Allow King backward move, restrict normal pieces
+            if (piece === 'b' && dr > 0) return { valid: false };
+            if (piece === 'r' && dr < 0) return { valid: false };
+
             if (absDr === 1 && !mustJump) return { valid: true, isJump: false };
             if (absDr === 2) {
                 const midP = boardState[(r1+r2)/2][(c1+c2)/2];
