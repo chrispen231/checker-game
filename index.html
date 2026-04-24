@@ -25,7 +25,6 @@
             padding: 20px;
         }
 
-        /* Name Entry Screen */
         #setup-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg); display: flex; flex-direction: column;
@@ -73,7 +72,7 @@
 
     <div id="setup-screen">
         <div class="card">
-            <h1>Welcome to Chrispen's Checkers</h1>
+            <h1>Chrispen's Checkers</h1>
             <p>Enter your name to start:</p>
             <input type="text" id="user-name-input" placeholder="Your Name">
             <br>
@@ -87,13 +86,13 @@
         <button onclick="resetGame(true)">Play Again</button>
     </div>
 
-    <h1 id="game-title">Chrispen's Checkers</h1>
+    <h1>Chrispen's Checkers</h1>
 
     <div id="connection-panel">
         <p>Your ID: <strong id="my-id">...</strong></p>
         <input type="text" id="peer-id-input" placeholder="Friend's ID">
         <button onclick="connectToFriend()">Join Game</button>
-        <p id="conn-status" style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">Waiting for connection...</p>
+        <p id="conn-status" style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">Waiting...</p>
     </div>
 
     <div id="board"></div>
@@ -141,16 +140,15 @@
             const shortId = Math.floor(1000 + Math.random() * 9000).toString();
             peer = new Peer(shortId); 
             peer.on('open', (id) => { myIdDisplay.innerText = id; });
-            peer.on('error', () => { window.location.reload(); });
+            peer.on('error', (err) => { 
+                console.error(err);
+                if(err.type === 'unavailable-id') window.location.reload(); 
+            });
 
             peer.on('connection', (connection) => {
                 conn = connection;
                 myRole = 'black';
                 setupDataHandler();
-                // Send our name to the person who just joined
-                setTimeout(() => {
-                    conn.send({ type: 'handshake', name: myName });
-                }, 500);
             });
         }
 
@@ -160,10 +158,11 @@
             conn = peer.connect(peerId);
             myRole = 'red';
             setupDataHandler();
-            // Send our name to the host
-            setTimeout(() => {
+            
+            // Wait for connection to open before sending name
+            conn.on('open', () => {
                 conn.send({ type: 'handshake', name: myName });
-            }, 500);
+            });
         }
 
         function setupDataHandler() {
@@ -171,6 +170,10 @@
                 if (data.type === 'handshake') {
                     opponentName = data.name;
                     connStatus.innerText = `Connected to ${opponentName}!`;
+                    // If we haven't sent our name yet (Host side), send it now
+                    if (myRole === 'black') {
+                        conn.send({ type: 'handshake', name: myName });
+                    }
                     createBoard();
                 } else if (data.type === 'move') {
                     boardState = data.board;
