@@ -47,7 +47,6 @@
         }
         .subtitle { font-size: 0.72rem; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
 
-        /* TABS */
         .tabs { display: flex; gap: 6px; margin-bottom: 18px; }
         .tab-btn {
             padding: 8px 22px; border-radius: 4px; border: 1px solid var(--border);
@@ -55,9 +54,7 @@
             font-size: 0.78rem; cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
         }
         .tab-btn.active { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 500; }
-        .tab-btn:hover:not(.active) { border-color: var(--gold); color: var(--gold); }
 
-        /* PANELS */
         .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin-bottom: 18px; width: 100%; max-width: 520px; }
         .panel h3 { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--gold); margin-bottom: 10px; }
 
@@ -69,17 +66,13 @@
         input {
             padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border);
             background: #111; color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.85rem;
-            width: 110px; text-align: center; outline: none; transition: border-color 0.2s;
+            width: 130px; text-align: center; outline: none;
         }
-        input:focus { border-color: var(--gold); }
         button.btn {
             padding: 8px 16px; background: var(--gold); border: none; color: #000;
             border-radius: 4px; cursor: pointer; font-family: 'DM Mono', monospace;
-            font-size: 0.82rem; font-weight: 500; letter-spacing: 1px; transition: opacity 0.2s;
+            font-size: 0.82rem; font-weight: 500;
         }
-        button.btn:hover { opacity: 0.85; }
-        button.btn.secondary { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-        button.btn.secondary:hover { border-color: var(--gold); color: var(--gold); }
 
         #conn-status {
             font-size: 0.78rem; padding: 6px 10px; border-radius: 4px;
@@ -88,85 +81,42 @@
         #conn-status.ok { border-color: #4caf50; color: #4caf50; }
         #conn-status.err { border-color: #e74c3c; color: #e74c3c; }
 
-        /* DIFFICULTY */
-        .diff-row { display: flex; gap: 6px; }
-        .diff-btn {
-            padding: 6px 14px; border-radius: 4px; border: 1px solid var(--border);
-            background: transparent; color: var(--muted); font-family: 'DM Mono', monospace;
-            font-size: 0.75rem; cursor: pointer; transition: all 0.15s;
-        }
-        .diff-btn.active { background: var(--board-dark); border-color: var(--board-dark); color: #fff; }
-
-        /* STATUS BAR */
-        #status-bar {
-            display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
-            font-size: 0.8rem; color: var(--muted); width: 100%; max-width: 480px;
-        }
-        #turn-indicator {
-            display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text);
-        }
-        .turn-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-        .turn-dot.black { background: var(--black-hi); border: 2px solid #555; }
-        .turn-dot.red { background: var(--red-piece); border: 2px solid #900; }
-        #score { margin-left: auto; font-size: 0.78rem; color: var(--muted); }
-        .score-r { color: var(--red-hi); } .score-b { color: #aaa; }
-
-        /* BOARD */
-        #board-wrap { position: relative; }
         #board {
             display: grid;
             grid-template-columns: repeat(8, 58px);
             grid-template-rows: repeat(8, 58px);
             border: 3px solid #333;
-            border-radius: 2px;
             box-shadow: 0 8px 40px rgba(0,0,0,0.7);
-            transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
         }
         #board.flipped { transform: rotate(180deg); }
 
         .square { width: 58px; height: 58px; display: flex; justify-content: center; align-items: center; position: relative; }
         .white-sq { background-color: var(--board-light); }
         .black-sq { background-color: var(--board-dark); }
-        .hint-sq::after {
-            content: ''; position: absolute; width: 22px; height: 22px; border-radius: 50%;
-            background: var(--hint); pointer-events: none;
-        }
-        .hint-jump-sq::after {
-            content: ''; position: absolute; inset: 3px; border-radius: 2px;
-            background: var(--hint-jump); pointer-events: none;
-        }
+        
+        .hint-sq::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: var(--hint); }
+        .hint-jump-sq::after { content: ''; position: absolute; inset: 4px; border: 2px solid var(--hint-jump); border-radius: 2px; }
 
         .piece {
             width: 46px; height: 46px; border-radius: 50%; cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 20px; position: relative; z-index: 2;
-            transition: transform 0.15s, box-shadow 0.15s;
+            display: flex; justify-content: center; align-items: center; font-size: 20px;
+            transition: transform 0.1s; z-index: 5;
         }
-        .piece:hover { transform: scale(1.08); }
-        .piece.red { background: radial-gradient(circle at 35% 35%, var(--red-hi), var(--red-piece)); border: 2px solid #7a1515; box-shadow: inset 0 -3px 6px rgba(0,0,0,0.4), 0 3px 6px rgba(0,0,0,0.4); }
-        .piece.black { background: radial-gradient(circle at 35% 35%, #555, var(--black-piece)); border: 2px solid #000; box-shadow: inset 0 -3px 6px rgba(0,0,0,0.5), 0 3px 6px rgba(0,0,0,0.5); }
-        .piece.selected { outline: 3px solid #ffe600; outline-offset: 2px; transform: scale(1.1); box-shadow: 0 0 14px rgba(255,230,0,0.7); }
+        .piece.red { background: radial-gradient(circle at 35% 35%, var(--red-hi), var(--red-piece)); border: 2px solid #7a1515; }
+        .piece.black { background: radial-gradient(circle at 35% 35%, #555, var(--black-piece)); border: 2px solid #000; }
+        .piece.selected { outline: 3px solid #ffe600; transform: scale(1.1); }
         #board.flipped .piece { transform: rotate(180deg); }
-        #board.flipped .piece.selected { transform: rotate(180deg) scale(1.1); }
 
-        /* MODAL */
         #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 99; backdrop-filter: blur(4px); }
         #win-modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--panel); border: 1px solid var(--border); padding: 36px 48px;
-            border-radius: 10px; text-align: center; z-index: 100;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            background: var(--panel); border: 1px solid var(--border); padding: 30px; border-radius: 10px; text-align: center; z-index: 100;
         }
-        #win-modal h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); margin-bottom: 8px; }
-        #win-modal p { font-size: 0.8rem; color: var(--muted); margin-bottom: 24px; }
-        .modal-btns { display: flex; gap: 10px; justify-content: center; }
-
-        /* AI thinking */
-        #ai-thinking { font-size: 0.75rem; color: var(--gold); display: none; animation: blink 1s infinite; margin-left: 8px; }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-        .copy-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.75rem; padding: 2px 6px; }
-        .copy-btn:hover { color: var(--gold); }
+        
+        #status-bar { display: flex; width: 100%; max-width: 464px; margin-bottom: 10px; font-size: 0.85rem; }
+        .turn-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .turn-dot.black { background: #333; }
+        .turn-dot.red { background: var(--red-piece); }
     </style>
 </head>
 <body>
@@ -174,99 +124,65 @@
 <div id="overlay"></div>
 <div id="win-modal">
     <h2 id="winner-text">Black Wins!</h2>
-    <p id="winner-sub">No moves remaining for the other side.</p>
-    <div class="modal-btns">
-        <button class="btn" onclick="resetGame(true)">Play Again</button>
-        <button class="btn secondary" onclick="closeModal()">Close</button>
-    </div>
+    <p id="winner-sub" style="margin: 10px 0 20px; color: var(--muted);"></p>
+    <button class="btn" onclick="resetGame(true)">Play Again</button>
 </div>
 
 <h1>Chrispen's Checkers</h1>
 <p class="subtitle">Classic Board Game</p>
 
 <div class="tabs">
-    <button class="tab-btn active" onclick="switchMode('online')">⚡ Online</button>
-    <button class="tab-btn" onclick="switchMode('ai')">🤖 vs AI</button>
-    <button class="tab-btn" onclick="switchMode('local')">👥 Local</button>
+    <button class="tab-btn active" id="tab-online" onclick="switchMode('online')">⚡ Online</button>
+    <button class="tab-btn" id="tab-ai" onclick="switchMode('ai')">🤖 vs AI</button>
+    <button class="tab-btn" id="tab-local" onclick="switchMode('local')">👥 Local</button>
 </div>
 
-<!-- ONLINE PANEL -->
 <div id="panel-online" class="panel">
     <h3>Multiplayer</h3>
     <div class="conn-row">
         <span style="font-size:0.75rem;color:var(--muted)">Your ID:</span>
-        <span class="id-badge" id="my-id">...</span>
-        <button class="copy-btn" onclick="copyId()" title="Copy ID">📋</button>
+        <span class="id-badge" id="my-id">....</span>
     </div>
     <div class="conn-row">
-        <input type="text" id="peer-id-input" placeholder="Friend's ID" maxlength="4">
+        <input type="text" id="peer-id-input" placeholder="Friend's ID">
         <button class="btn" onclick="connectToFriend()">Join</button>
-        <button class="btn secondary" onclick="resetGame(true)">Reset</button>
+        <button class="btn secondary" style="background:#333; color:white;" onclick="resetGame(true)">Reset</button>
     </div>
-    <div id="conn-status">Waiting for connection…</div>
+    <div id="conn-status">Ready to connect</div>
 </div>
 
-<!-- AI PANEL -->
 <div id="panel-ai" class="panel" style="display:none">
     <h3>vs Computer</h3>
-    <p style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">You play Black, AI plays Red.</p>
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <span style="font-size:0.78rem;color:var(--muted)">Difficulty:</span>
-        <div class="diff-row">
-            <button class="diff-btn active" onclick="setDiff(1,this)">Easy</button>
-            <button class="diff-btn" onclick="setDiff(3,this)">Medium</button>
-            <button class="diff-btn" onclick="setDiff(5,this)">Hard</button>
-        </div>
-        <button class="btn secondary" onclick="resetGame(false)">New Game</button>
-    </div>
+    <button class="btn" onclick="resetGame(false)">Start New Game</button>
 </div>
 
-<!-- LOCAL PANEL -->
 <div id="panel-local" class="panel" style="display:none">
-    <h3>Pass & Play</h3>
-    <p style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">Two players, one device. Pass the screen each turn.</p>
-    <button class="btn secondary" onclick="resetGame(false)">New Game</button>
+    <h3>Local Pass & Play</h3>
+    <button class="btn" onclick="resetGame(false)">Start New Game</button>
 </div>
 
 <div id="status-bar">
     <div id="turn-indicator">
         <div class="turn-dot black" id="turn-dot"></div>
         <span id="turn-text">Black's Turn</span>
-        <span id="ai-thinking">thinking…</span>
     </div>
-    <div id="score"><span class="score-b" id="score-b">⬛ 12</span> &nbsp;|&nbsp; <span class="score-r" id="score-r">🔴 12</span></div>
+    <div style="margin-left:auto" id="score-display">⬛ 12 | 🔴 12</div>
 </div>
 
-<div id="board-wrap">
-    <div id="board"></div>
-</div>
+<div id="board"></div>
 
 <script>
-// ─── State ────────────────────────────────────────────────────────────────────
-const boardEl = document.getElementById('board');
-const myIdDisplay = document.getElementById('my-id');
-const connStatus = document.getElementById('conn-status');
-const winModal = document.getElementById('win-modal');
-const overlay = document.getElementById('overlay');
-const winnerText = document.getElementById('winner-text');
-const winnerSub = document.getElementById('winner-sub');
-const aiThinking = document.getElementById('ai-thinking');
-const turnDot = document.getElementById('turn-dot');
-const turnText = document.getElementById('turn-text');
-const scoreB = document.getElementById('score-b');
-const scoreR = document.getElementById('score-r');
-
-let mode = 'online';   // 'online' | 'ai' | 'local'
-let aiDepth = 1;
-let conn = null;
-let myRole = null;     // 'black' | 'red' | null (local)
+// --- CORE STATE ---
+let board = [];
 let turn = 'black';
 let selected = null;
 let mustJump = false;
-let validMovesCache = [];
 let gameOver = false;
+let myRole = null; 
+let mode = 'online';
+let conn = null;
 
-const INIT = [
+const INIT_BOARD = [
     [' ','r',' ','r',' ','r',' ','r'],
     ['r',' ','r',' ','r',' ','r',' '],
     [' ','r',' ','r',' ','r',' ','r'],
@@ -276,380 +192,229 @@ const INIT = [
     [' ','b',' ','b',' ','b',' ','b'],
     ['b',' ','b',' ','b',' ','b',' ']
 ];
-let board = INIT.map(r=>[...r]);
 
-// ─── PeerJS ───────────────────────────────────────────────────────────────────
-const shortId = Math.floor(1000 + Math.random() * 9000).toString();
-let peer = new Peer(shortId);
+// --- PEER JS SETUP ---
+const peer = new Peer(Math.floor(1000 + Math.random() * 9000).toString());
 
-peer.on('open', id => { myIdDisplay.innerText = id; });
-peer.on('error', err => {
-    const msg = err.type === 'peer-unavailable' ? 'Peer not found. Check the ID.'
-               : err.type === 'unavailable-id'  ? 'ID taken — refreshing…'
-               : `Error: ${err.type}`;
-    setConnStatus(msg, 'err');
-    if (err.type === 'unavailable-id') setTimeout(() => location.reload(), 1500);
-});
-// Host: someone joined us
-peer.on('connection', connection => {
-    conn = connection;
+peer.on('open', id => { document.getElementById('my-id').innerText = id; });
+
+peer.on('connection', c => {
+    conn = c;
     myRole = 'black';
-    conn.on('open', () => {
-        setConnStatus('Connected! You are ⬛ Black.', 'ok');
-        setupDataHandler();
-        // Host sends the initial board state so Red syncs up immediately
-        doReset();
-        conn.send({ type: 'sync', board, nextTurn: turn });
-    });
-    conn.on('error', () => setConnStatus('Connection error.', 'err'));
+    setupConn();
 });
 
-// Joiner: we are connecting to the host
 function connectToFriend() {
     const id = document.getElementById('peer-id-input').value.trim();
-    if (!id) return setConnStatus('Enter a Friend ID first.', 'err');
-    setConnStatus('Connecting…', '');
+    if (!id) return;
+    setStatus('Connecting...', '');
     conn = peer.connect(id);
     myRole = 'red';
-    conn.on('open', () => {
-        setConnStatus('Connected! You are 🔴 Red.', 'ok');
-        setupDataHandler();
-    });
-    conn.on('error', () => setConnStatus('Connection failed.', 'err'));
+    setupConn();
 }
 
-function setupDataHandler() {
+function setupConn() {
+    conn.on('open', () => {
+        setStatus(`Connected as ${myRole.toUpperCase()}`, 'ok');
+        if (myRole === 'black') {
+            conn.send({ type: 'init', board: board, turn: turn });
+        }
+    });
     conn.on('data', data => {
-        if (data.type === 'move' || data.type === 'sync') {
-            board = data.board; turn = data.nextTurn;
+        if (data.type === 'move' || data.type === 'init') {
+            board = data.board;
+            turn = data.turn;
             mustJump = data.mustJump || false;
-            selected = data.selected || null;
-            render(); 
-            if (data.type === 'move') checkWinner();
+            render();
+            checkWinner();
         } else if (data.type === 'reset') {
             doReset();
         }
     });
 }
 
-function setConnStatus(msg, cls) {
-    connStatus.innerText = msg;
-    connStatus.className = cls === 'ok' ? 'ok' : cls === 'err' ? 'err' : '';
+function setStatus(m, cls) {
+    const s = document.getElementById('conn-status');
+    s.innerText = m;
+    s.className = cls === 'ok' ? 'ok' : '';
 }
 
-function copyId() {
-    navigator.clipboard.writeText(shortId).then(() => {
-        const b = document.querySelector('.copy-btn');
-        b.innerText = '✓'; setTimeout(() => b.innerText = '📋', 1200);
-    });
+// --- GAME LOGIC ---
+function doReset() {
+    board = INIT_BOARD.map(r => [...r]);
+    turn = 'black';
+    selected = null;
+    mustJump = false;
+    gameOver = false;
+    document.getElementById('win-modal').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+    render();
 }
 
-// ─── Mode switching ───────────────────────────────────────────────────────────
-function switchMode(m) {
-    mode = m;
-    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['online','ai','local'][i] === m));
-    document.getElementById('panel-online').style.display = m === 'online' ? '' : 'none';
-    document.getElementById('panel-ai').style.display    = m === 'ai'     ? '' : 'none';
-    document.getElementById('panel-local').style.display = m === 'local'  ? '' : 'none';
-    myRole = m === 'local' ? null : m === 'ai' ? 'black' : myRole;
-    resetGame(false);
-}
-
-function setDiff(d, el) {
-    aiDepth = d;
-    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    resetGame(false);
-}
-
-// ─── Board rendering ──────────────────────────────────────────────────────────
 function render() {
+    const boardEl = document.getElementById('board');
     boardEl.innerHTML = '';
-    const hints = getHintSquares();
+    boardEl.classList.toggle('flipped', mode === 'online' && myRole === 'red');
 
-    // Flip board for red player in online mode
-    const flipped = mode === 'online' && myRole === 'red';
-    boardEl.classList.toggle('flipped', flipped);
+    const jumps = getAllMoves(turn).filter(m => m.isJump);
 
     for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
             const sq = document.createElement('div');
-            const isLight = (r + c) % 2 === 0;
-            sq.className = `square ${isLight ? 'white-sq' : 'black-sq'}`;
-            const key = `${r},${c}`;
-            if (hints.jumps.has(key)) sq.classList.add('hint-jump-sq');
-            else if (hints.moves.has(key)) sq.classList.add('hint-sq');
-
+            sq.className = `square ${(r + c) % 2 === 0 ? 'white-sq' : 'black-sq'}`;
+            
             const p = board[r][c];
             if (p !== ' ') {
                 const piece = document.createElement('div');
                 piece.className = `piece ${p.toLowerCase() === 'b' ? 'black' : 'red'}`;
-                if (selected && selected.r === r && selected.c === c) piece.classList.add('selected');
                 if (p === 'B' || p === 'R') piece.innerText = '♛';
+                if (selected && selected.r === r && selected.c === c) piece.classList.add('selected');
                 sq.appendChild(piece);
             }
+
+            // Hints
+            if (selected) {
+                const move = getValidMoves(selected.r, selected.c).find(m => m.r === r && m.c === c);
+                if (move) {
+                    if (jumps.length > 0 && !move.isJump) { /* ignore */ }
+                    else sq.classList.add(move.isJump ? 'hint-jump-sq' : 'hint-sq');
+                }
+            }
+
             sq.onclick = () => handleClick(r, c);
             boardEl.appendChild(sq);
         }
     }
-    updateStatus();
+
+    document.getElementById('turn-text').innerText = `${turn.toUpperCase()}'s Turn`;
+    document.getElementById('turn-dot').className = `turn-dot ${turn}`;
     updateScore();
-}
-
-function getHintSquares() {
-    const moves = new Set(), jumps = new Set();
-    if (!selected) return { moves, jumps };
-    const { r, c } = selected;
-    allDestinations(r, c).forEach(m => {
-        if (m.isJump) jumps.add(`${m.r},${m.c}`);
-        else moves.add(`${m.r},${m.c}`);
-    });
-    return { moves, jumps };
-}
-
-function updateStatus() {
-    const myTurn = (mode === 'local') || (mode === 'ai' && turn === 'black') || (mode === 'online' && turn === myRole);
-    const label = mode === 'local' ? `${turn === 'black' ? '⬛ Black' : '🔴 Red'}'s Turn`
-                : mode === 'ai' && turn === 'red' ? 'AI thinking…'
-                : myTurn ? 'Your Turn' : "Opponent's Turn";
-    turnText.innerText = label;
-    turnDot.className = `turn-dot ${turn}`;
-    aiThinking.style.display = (mode === 'ai' && turn === 'red') ? 'inline' : 'none';
-}
-
-function updateScore() {
-    let b = 0, r = 0;
-    board.forEach(row => row.forEach(p => { if(p.toLowerCase()==='b') b++; if(p.toLowerCase()==='r') r++; }));
-    scoreB.innerText = `⬛ ${b}`; scoreR.innerText = `🔴 ${r}`;
-}
-
-// ─── Move logic ───────────────────────────────────────────────────────────────
-function canMovePiece(r, c) {
-    const p = board[r][c];
-    return p !== ' ' && p.toLowerCase() === turn[0];
-}
-
-function dirs(piece) {
-    if (piece === 'B' || piece === 'R') return [[-1,-1],[-1,1],[1,-1],[1,1]];
-    if (piece === 'b') return [[-1,-1],[-1,1]];
-    return [[1,-1],[1,1]];
-}
-
-function allDestinations(r, c) {
-    const p = board[r][c];
-    const results = [];
-    for (const [dr, dc] of dirs(p)) {
-        const nr = r+dr, nc = c+dc;
-        if (nr<0||nr>7||nc<0||nc>7) continue;
-        if (board[nr][nc] === ' ') {
-            results.push({ r: nr, c: nc, isJump: false });
-        } else if (board[nr][nc].toLowerCase() !== p.toLowerCase()) {
-            const jr = r+2*dr, jc = c+2*dc;
-            if (jr>=0&&jr<8&&jc>=0&&jc<8&&board[jr][jc]===' ')
-                results.push({ r: jr, c: jc, isJump: true, mr: r+dr, mc: c+dc });
-        }
-    }
-    return results;
-}
-
-function allJumpsForPlayer(color) {
-    const jumps = [];
-    for (let r=0;r<8;r++) for (let c=0;c<8;c++) {
-        if (board[r][c].toLowerCase()===color[0]) {
-            allDestinations(r,c).filter(m=>m.isJump).forEach(m=>jumps.push({from:{r,c},...m}));
-        }
-    }
-    return jumps;
-}
-
-function allMovesForPlayer(color) {
-    const moves = [];
-    for (let r=0;r<8;r++) for (let c=0;c<8;c++) {
-        if (board[r][c].toLowerCase()===color[0]) {
-            allDestinations(r,c).forEach(m=>moves.push({from:{r,c},...m}));
-        }
-    }
-    return moves;
 }
 
 function handleClick(r, c) {
     if (gameOver) return;
-    if (mode === 'online' && (!conn || turn !== myRole)) return;
-    if (mode === 'ai' && turn !== 'black') return;
+    if (mode === 'online' && myRole !== turn) return;
 
-    if (canMovePiece(r, c)) {
-        // Force jump selection if mustJump and piece can't jump
-        if (mustJump && selected) {
-            const canJump = allDestinations(r,c).some(m=>m.isJump);
-            if (!canJump) return;
-        }
+    const p = board[r][c];
+    if (p !== ' ' && p.toLowerCase() === turn[0]) {
         selected = { r, c };
         render();
         return;
     }
 
-    if (!selected) return;
-
-    const dest = allDestinations(selected.r, selected.c).find(m => m.r === r && m.c === c);
-    if (!dest) { selected = null; render(); return; }
-
-    // Enforce mandatory jump
-    const jumpsAvailable = allJumpsForPlayer(turn);
-    if (jumpsAvailable.length > 0 && !dest.isJump) return;
-
-    doMove(selected.r, selected.c, dest);
-
-    if (mode === 'online' && conn) {
-        conn.send({ type: 'move', board, nextTurn: turn, mustJump, selected });
-    }
-    render();
-    checkWinner();
-
-    if (mode === 'ai' && turn === 'red' && !gameOver) {
-        setTimeout(doAiMove, 300);
+    if (selected) {
+        const moves = getValidMoves(selected.r, selected.c);
+        const move = moves.find(m => m.r === r && m.c === c);
+        
+        const jumps = getAllMoves(turn).filter(m => m.isJump);
+        if (move && (jumps.length === 0 || move.isJump)) {
+            executeMove(selected.r, selected.c, move);
+            if (mode === 'online' && conn) {
+                conn.send({ type: 'move', board, turn, mustJump });
+            }
+            render();
+            checkWinner();
+        } else {
+            selected = null;
+            render();
+        }
     }
 }
 
-function doMove(r1, c1, dest) {
-    let p = board[r1][c1];
-    board[dest.r][dest.c] = p;
-    board[r1][c1] = ' ';
-    if (dest.isJump) board[dest.mr][dest.mc] = ' ';
+function getValidMoves(r, c) {
+    const p = board[r][c];
+    const moves = [];
+    const ds = (p === 'B' || p === 'R') ? [[1,1],[1,-1],[-1,1],[-1,-1]] : (p === 'b' ? [[-1,1],[-1,-1]] : [[1,1],[1,-1]]);
 
-    // Promote to king
-    if (dest.r === 0 && p === 'b') { board[dest.r][dest.c] = 'B'; p = 'B'; }
-    if (dest.r === 7 && p === 'r') { board[dest.r][dest.c] = 'R'; p = 'R'; }
-
-    // Multi-jump continuation
-    if (dest.isJump) {
-        const further = allDestinations(dest.r, dest.c).filter(m => m.isJump);
-        if (further.length > 0) {
-            selected = { r: dest.r, c: dest.c }; mustJump = true; return;
+    for (let [dr, dc] of ds) {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+            if (board[nr][nc] === ' ') {
+                moves.push({ r: nr, c: nc, isJump: false });
+            } else if (board[nr][nc].toLowerCase() !== p.toLowerCase()) {
+                const jr = r + dr * 2, jc = c + dc * 2;
+                if (jr >= 0 && jr < 8 && jc >= 0 && jc < 8 && board[jr][jc] === ' ') {
+                    moves.push({ r: jr, c: jc, isJump: true, mr: nr, mc: nc });
+                }
+            }
         }
     }
-    selected = null; mustJump = false;
+    return moves;
+}
+
+function getAllMoves(color) {
+    let moves = [];
+    for (let r=0; r<8; r++) {
+        for (let c=0; c<8; c++) {
+            if (board[r][c].toLowerCase() === color[0]) {
+                moves.push(...getValidMoves(r, c));
+            }
+        }
+    }
+    return moves;
+}
+
+function executeMove(r, c, move) {
+    const p = board[r][c];
+    board[move.r][move.c] = p;
+    board[r][c] = ' ';
+    if (move.isJump) board[move.mr][move.mc] = ' ';
+
+    // Kinging
+    if (move.r === 0 && p === 'b') board[move.r][move.c] = 'B';
+    if (move.r === 7 && p === 'r') board[move.r][move.c] = 'R';
+
+    // Multi-jump
+    if (move.isJump) {
+        const nextJumps = getValidMoves(move.r, move.c).filter(m => m.isJump);
+        if (nextJumps.length > 0) {
+            selected = { r: move.r, c: move.c };
+            mustJump = true;
+            return;
+        }
+    }
+
+    selected = null;
+    mustJump = false;
     turn = turn === 'black' ? 'red' : 'black';
 }
 
-// ─── Win / stalemate ──────────────────────────────────────────────────────────
+function updateScore() {
+    let b=0, r=0;
+    board.flat().forEach(p => { if(p.toLowerCase()==='b') b++; if(p.toLowerCase()==='r') r++; });
+    document.getElementById('score-display').innerText = `⬛ ${b} | 🔴 ${r}`;
+}
+
 function checkWinner() {
-    let b = 0, r = 0;
-    board.forEach(row => row.forEach(p => { if(p.toLowerCase()==='b') b++; if(p.toLowerCase()==='r') r++; }));
-
-    if (b === 0) return declareWinner('🔴 Red Wins!', 'Black has no pieces left.');
-    if (r === 0) return declareWinner('⬛ Black Wins!', 'Red has no pieces left.');
-
-    const moves = allMovesForPlayer(turn);
+    const moves = getAllMoves(turn);
     if (moves.length === 0) {
-        const loser = turn === 'black' ? 'Black' : 'Red';
-        const winner = turn === 'black' ? '🔴 Red Wins!' : '⬛ Black Wins!';
-        declareWinner(winner, `${loser} has no valid moves — stalemate!`);
+        gameOver = true;
+        const winner = turn === 'black' ? 'RED' : 'BLACK';
+        document.getElementById('winner-text').innerText = `${winner} WINS!`;
+        document.getElementById('winner-sub').innerText = 'No legal moves remaining.';
+        document.getElementById('win-modal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
     }
 }
 
-function declareWinner(msg, sub) {
-    gameOver = true;
-    winnerText.innerText = msg;
-    winnerSub.innerText = sub;
-    winModal.style.display = 'block';
-    overlay.style.display = 'block';
+function switchMode(m) {
+    mode = m;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tab-${m}`).classList.add('active');
+    document.getElementById('panel-online').style.display = m === 'online' ? '' : 'none';
+    document.getElementById('panel-ai').style.display = m === 'ai' ? '' : 'none';
+    document.getElementById('panel-local').style.display = m === 'local' ? '' : 'none';
+    doReset();
 }
 
-function closeModal() {
-    winModal.style.display = 'none';
-    overlay.style.display = 'none';
-}
-
-// ─── Reset ────────────────────────────────────────────────────────────────────
 function resetGame(notify) {
     if (notify && conn) conn.send({ type: 'reset' });
     doReset();
 }
 
-function doReset() {
-    board = INIT.map(r=>[...r]);
-    turn = 'black'; mustJump = false; selected = null; gameOver = false;
-    winModal.style.display = 'none'; overlay.style.display = 'none';
-    render();
-}
+// Start
+doReset();
 
-// ─── AI (Minimax with alpha-beta) ─────────────────────────────────────────────
-function doAiMove() {
-    if (gameOver) return;
-    updateStatus();
-    const move = minimax(board, aiDepth, -Infinity, Infinity, true, 'red').move;
-    if (!move) return;
-    selected = move.from;
-    doMove(move.from.r, move.from.c, move);
-    render();
-    checkWinner();
-}
-
-function evaluate(b) {
-    let score = 0;
-    for (let r=0;r<8;r++) for (let c=0;c<8;c++) {
-        const p = b[r][c];
-        if (p==='r') score += 100 + (7-r)*3;
-        else if (p==='R') score += 180;
-        else if (p==='b') score -= 100 + r*3;
-        else if (p==='B') score -= 180;
-    }
-    return score;
-}
-
-function cloneBoard(b) { return b.map(r=>[...r]); }
-
-function applyMove(b, from, dest) {
-    const nb = cloneBoard(b);
-    let p = nb[from.r][from.c];
-    nb[dest.r][dest.c] = p; nb[from.r][from.c] = ' ';
-    if (dest.isJump) nb[dest.mr][dest.mc] = ' ';
-    if (dest.r===0 && p==='b') nb[dest.r][dest.c]='B';
-    if (dest.r===7 && p==='r') nb[dest.r][dest.c]='R';
-    return nb;
-}
-
-function getMovesForBoard(b, color) {
-    const moves = [];
-    for (let r=0;r<8;r++) for (let c=0;c<8;c++) {
-        if (b[r][c].toLowerCase()===color[0]) {
-            const p = b[r][c];
-            const ds = p==='B'||p==='R' ? [[-1,-1],[-1,1],[1,-1],[1,1]]
-                      : p==='b' ? [[-1,-1],[-1,1]] : [[1,-1],[1,1]];
-            for (const [dr,dc] of ds) {
-                const nr=r+dr,nc=c+dc;
-                if(nr<0||nr>7||nc<0||nc>7) continue;
-                if(b[nr][nc]===' ') moves.push({from:{r,c},r:nr,c:nc,isJump:false});
-                else if(b[nr][nc].toLowerCase()!==p.toLowerCase()) {
-                    const jr=r+2*dr,jc=c+2*dc;
-                    if(jr>=0&&jr<8&&jc>=0&&jc<8&&b[jr][jc]===' ')
-                        moves.push({from:{r,c},r:jr,c:jc,isJump:true,mr:r+dr,mc:c+dc});
-                }
-            }
-        }
-    }
-    // Enforce mandatory jump
-    const jumps = moves.filter(m=>m.isJump);
-    return jumps.length ? jumps : moves;
-}
-
-function minimax(b, depth, alpha, beta, maximizing, color) {
-    const moves = getMovesForBoard(b, color);
-    if (depth===0 || moves.length===0) return { score: evaluate(b), move: null };
-    let best = maximizing ? { score: -Infinity, move: null } : { score: Infinity, move: null };
-    for (const m of moves) {
-        const nb = applyMove(b, m.from, m);
-        const next = color==='red' ? 'black' : 'red';
-        const res = minimax(nb, depth-1, alpha, beta, !maximizing, next);
-        if (maximizing && res.score > best.score) { best = { score: res.score, move: m }; alpha = Math.max(alpha, res.score); }
-        if (!maximizing && res.score < best.score) { best = { score: res.score, move: m }; beta = Math.min(beta, res.score); }
-        if (beta <= alpha) break;
-    }
-    return best;
-}
-
-// ─── Init ─────────────────────────────────────────────────────────────────────
-render();
 </script>
 </body>
 </html>
