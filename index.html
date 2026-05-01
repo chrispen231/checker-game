@@ -290,31 +290,42 @@ peer.on('error', err => {
     setConnStatus(msg, 'err');
     if (err.type === 'unavailable-id') setTimeout(() => location.reload(), 1500);
 });
+// Host: someone joined us
 peer.on('connection', connection => {
     conn = connection;
     myRole = 'black';
-    setupDataHandler();
-    setConnStatus('Connected! You are ⬛ Black.', 'ok');
-    resetGame(false);
+    conn.on('open', () => {
+        setConnStatus('Connected! You are ⬛ Black.', 'ok');
+        setupDataHandler();
+        // Host sends the initial board state so Red syncs up immediately
+        doReset();
+        conn.send({ type: 'sync', board, nextTurn: turn });
+    });
+    conn.on('error', () => setConnStatus('Connection error.', 'err'));
 });
 
+// Joiner: we are connecting to the host
 function connectToFriend() {
     const id = document.getElementById('peer-id-input').value.trim();
     if (!id) return setConnStatus('Enter a Friend ID first.', 'err');
     setConnStatus('Connecting…', '');
     conn = peer.connect(id);
     myRole = 'red';
-    setupDataHandler();
-    conn.on('open', () => setConnStatus('Connected! You are 🔴 Red.', 'ok'));
+    conn.on('open', () => {
+        setConnStatus('Connected! You are 🔴 Red.', 'ok');
+        setupDataHandler();
+    });
     conn.on('error', () => setConnStatus('Connection failed.', 'err'));
 }
 
 function setupDataHandler() {
     conn.on('data', data => {
-        if (data.type === 'move') {
-            board = data.board; turn = data.nextTurn; mustJump = data.mustJump;
-            selected = data.selected;
-            render(); checkWinner();
+        if (data.type === 'move' || data.type === 'sync') {
+            board = data.board; turn = data.nextTurn;
+            mustJump = data.mustJump || false;
+            selected = data.selected || null;
+            render(); 
+            if (data.type === 'move') checkWinner();
         } else if (data.type === 'reset') {
             doReset();
         }
